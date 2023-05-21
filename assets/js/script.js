@@ -102,25 +102,6 @@ const specialCharacters = [
   ">",
 ];
 
-// Ask for user's desired password length between 8-12 characters
-
-// Check length and that it's a number
-
-// Ask if user wants to include each of the four types of characters
-// Check that at least one option is selected
-
-// Generate password based off choices when button clicked
-
-// If user choice didn't meet requirements, this asks if they would like to try again or not
-function tryAgain(choice) {
-  if (choice) {
-    userChoices();
-  } else {
-    alert("Generator canceled, refresh the page to start again.");
-    return null;
-  }
-}
-
 // Prompts for user to make selections for each option
 function userChoices() {
   // User input for password length, 8-128 characters in length
@@ -131,24 +112,26 @@ function userChoices() {
 
   // Checks if length is a number
   if (Number.isNaN(length)) {
-    let choice = confirm("Password length must be a number.\nTry again?");
-    tryAgain(choice);
+    let choice = alert(
+      "Password length must be a number.\nClick Generate Password to try again."
+    );
+    return null;
   }
 
   // Checks length meets minimum requirements of >= 8
   if (length < 8) {
     let choice = confirm(
-      "Password must be at least 8 characters long.\nTry again?"
+      "Password must be at least 8 characters long.\nClick Generate Password to try again."
     );
-    tryAgain(choice);
+    return null;
   }
 
   // Checks length meets maximum requirements of <= 128
   if (length > 128) {
     let choice = confirm(
-      "Password must be less than 128 characters long.\nTry again?"
+      "Password must be less than 128 characters long.\nClick Generate Password to try again."
     );
-    tryAgain(choice);
+    return null;
   }
 
   // Ask if password should include uppercase letters
@@ -179,9 +162,9 @@ function userChoices() {
     hasSpecial === false
   ) {
     let choice = confirm(
-      "At least one type of character must be selected.\nTry again?"
+      "At least one type of character must be selected.\nClick Generate Password to try again."
     );
-    tryAgain(choice);
+    return null;
   }
 
   // Stores user choices into an object
@@ -205,15 +188,63 @@ function getRandom(arr) {
 
 // Generates password based off user choices
 function generatePassword() {
+  // Get user choices for password criteria
   var choices = userChoices();
+  // Make array of all possible chars to include based off user choices
+  var possibleChars = [];
+  // Make array of chars that must be included
+  var needChars = [];
+  // How many options were selected by user
+  var count = 0;
+  // Generated password
+  var password = [];
+
+  // console.log(choices);
 
   // Check user choices to make sure they exist
   if (!choices) {
-    alert("No options selected, please refresh page to start again.");
+    alert("No options selected, please try again.");
     return null;
   }
 
-  
+  // Check for characters user chose to include in password
+  if (choices.hasUpperLetters) {
+    possibleChars = possibleChars.concat(upperCaseLetters);
+    needChars.push(getRandom(upperCaseLetters));
+    count++;
+  }
+  if (choices.hasLowerLetters) {
+    possibleChars = possibleChars.concat(lowerCaseLetters);
+    needChars.push(getRandom(lowerCaseLetters));
+    count++;
+  }
+  if (choices.hasNumbers) {
+    possibleChars = possibleChars.concat(numberCharacters);
+    needChars.push(getRandom(numberCharacters));
+    count++;
+  }
+  if (choices.hasSpecial) {
+    possibleChars = possibleChars.concat(specialCharacters);
+    needChars.push(getRandom(specialCharacters));
+    count++;
+  }
+
+  // Iterate through the password length adding randomly from possibleChars
+  for (let i = 0; i < choices.length - count; i++) {
+    let char = getRandom(possibleChars);
+    password.push(char);
+  }
+
+  // console.log(needChars);
+  // console.log(password);
+
+  // Add required characters to password to ensure at least one of each is included
+  password = password.concat(needChars);
+
+  // console.log(password);
+
+  // Turn password array into string
+  return password.join("");
 }
 
 var generateBtn = document.querySelector("#generate");
